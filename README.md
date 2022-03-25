@@ -1,3 +1,3 @@
 # Snake Game in React
 
-## https://vzsoares.github.io/SnakeGame/
+## https://snake-game-neon.vercel.app/
