@@ -1,8 +1,4 @@
-# Snake Game in React
-
-
-
-# Matching Game
+# Snake Game
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/vzsoares/SnakeGame?style=for-the-badge)
 ![GitHub language count](https://img.shields.io/github/languages/count/vzsoares/SnakeGame?style=for-the-badge)
@@ -18,4 +14,11 @@
 ### Link
 
 https://snake-game-neon.vercel.app/
+
+## 🚀 About
+
+- ReactJS
+- Functionality based on grid
+
+
 
