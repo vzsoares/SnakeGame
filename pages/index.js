@@ -1,6 +1,6 @@
-import styles from "../styles/Home.module.css"
-import { useEffect, useState } from "react"
-import { FaGithubSquare } from "react-icons/fa"
+import styles from "../styles/Home.module.css";
+import { useEffect, useState } from "react";
+import { FaGithubSquare } from "react-icons/fa";
 
 export default function Home() {
   const [myGrid, setMyGrid] = useState([
@@ -12,133 +12,135 @@ export default function Home() {
     ["white", "white", "white", "white", "white", "white", "white", "white"],
     ["white", "white", "white", "white", "white", "white", "white", "white"],
     ["white", "white", "white", "white", "white", "white", "white", "white"],
-  ])
-  const [snake, setSnake] = useState(["13", "14", "15", "16"])
+  ]);
+  const [snake, setSnake] = useState(["13", "14", "15", "16"]);
 
-  const [apple, setApple] = useState(["43"])
-  const [lastDirection, setLastDirection] = useState("down")
-  const [playing, setPlaying] = useState(true)
+  const [apple, setApple] = useState(["43"]);
+  const [lastDirection, setLastDirection] = useState("down");
+  const [playing, setPlaying] = useState(true);
   const youLost = (myMsg) => {
-    alert(`${myMsg}`)
-  }
-  const [lastHeads, setLastHeads] = useState("16 26")
+    alert(`${myMsg}`);
+  };
+  const [lastHeads, setLastHeads] = useState("16 26");
   const getNextGridBlock = (direction, prevHead) => {
-    let snakeHead = ""
+    let snakeHead = "";
 
     if (direction === "right") {
       if (Number(prevHead[1]) + 1 > 7) {
-        setPlaying(false)
-        youLost("oh no you hit the wall")
-        return
+        setPlaying(false);
+        youLost("oh no you hit the wall");
+        return;
       }
-      snakeHead = String(Number(prevHead) + 1)
+      snakeHead = String(Number(prevHead) + 1);
     }
     if (direction === "left") {
       if (Number(prevHead[1]) - 1 < 0) {
-        setPlaying(false)
-        youLost("oh no you hit the wall")
-        return
+        setPlaying(false);
+        youLost("oh no you hit the wall");
+        return;
       }
-      snakeHead = String(Number(prevHead) - 1)
+      snakeHead = String(Number(prevHead) - 1);
     }
     if (direction === "up") {
       if (Number(prevHead[0]) - 1 < 0) {
-        setPlaying(false)
-        youLost("oh no you hit the wall")
-        return
+        setPlaying(false);
+        youLost("oh no you hit the wall");
+        return;
       }
-      snakeHead = Number(prevHead[0]) - 1 + prevHead[1]
+      snakeHead = Number(prevHead[0]) - 1 + prevHead[1];
     }
     if (direction === "down") {
       if (Number(prevHead[0]) + 1 > 7) {
-        setPlaying(false)
-        youLost("oh no you hit the wall")
-        return
+        setPlaying(false);
+        youLost("oh no you hit the wall");
+        return;
       }
-      snakeHead = Number(prevHead[0]) + 1 + prevHead[1]
+      snakeHead = Number(prevHead[0]) + 1 + prevHead[1];
     }
     // prevent wrong output when i=0
     if (snakeHead.length !== 2) {
-      snakeHead = `${0}${snakeHead}`
+      snakeHead = `${0}${snakeHead}`;
     }
     // handle oppositeDirectionClick
     if (lastHeads === `${snakeHead} ${prevHead}`) {
-      let oppositeDirection = ""
+      let oppositeDirection = "";
       if (direction === "left") {
-        oppositeDirection = "right"
+        oppositeDirection = "right";
       }
       if (direction === "right") {
-        oppositeDirection = "left"
+        oppositeDirection = "left";
       }
       if (direction === "up") {
-        oppositeDirection = "down"
+        oppositeDirection = "down";
       }
       if (direction === "down") {
-        oppositeDirection = "up"
+        oppositeDirection = "up";
       }
       const newAnswer = getNextGridBlock(
         `${oppositeDirection}`,
         dumbSnake[dumbSnake.length - 1]
-      )
-      setLastDirection(oppositeDirection)
-      setLastHeads(`${newAnswer} ${prevHead}`)
-      return newAnswer
+      );
+      setLastDirection(oppositeDirection);
+      setLastHeads(`${newAnswer} ${prevHead}`);
+      return newAnswer;
     }
-    setLastHeads(`${prevHead} ${snakeHead}`)
+    setLastHeads(`${prevHead} ${snakeHead}`);
     if (dumbSnake.includes(snakeHead)) {
-      setPlaying(false)
-      youLost("oh no you hit yourself")
+      setPlaying(false);
+      youLost("oh no you hit yourself");
     }
-    return snakeHead
-  }
-  let dumbSnake = [...snake]
+    return snakeHead;
+  };
+  let dumbSnake = [...snake];
   const mainMovement = (direction) => {
-    dumbSnake.shift()
-    dumbSnake.push(getNextGridBlock(direction, dumbSnake[dumbSnake.length - 1]))
+    dumbSnake.shift();
+    dumbSnake.push(
+      getNextGridBlock(direction, dumbSnake[dumbSnake.length - 1])
+    );
     if (apple.includes(dumbSnake[dumbSnake.length - 1])) {
       // increase snake size
-      dumbSnake = [...apple, ...dumbSnake]
+      dumbSnake = [...apple, ...dumbSnake];
       // get new randomApple
       const getApple = (i, j) => {
-        let myApple = `${apple}`
+        let myApple = `${apple}`;
         while (dumbSnake.includes(myApple)) {
           myApple =
             String(Math.floor(Math.random() * i)) +
-            String(Math.floor(Math.random() * j))
+            String(Math.floor(Math.random() * j));
         }
-        return myApple
-      }
-      setApple(getApple(7, 7))
+        return myApple;
+      };
+      setApple(getApple(7, 7));
     }
-    setSnake([...dumbSnake])
-  }
+    setSnake([...dumbSnake]);
+  };
 
   useEffect(() => {
     // set Event Listeners
     window.addEventListener("keydown", (event) => {
       if (event.key === "ArrowRight") {
-        setLastDirection("right")
+        setLastDirection("right");
       }
       if (event.key === "ArrowLeft") {
-        setLastDirection("left")
+        setLastDirection("left");
       }
       if (event.key === "ArrowUp") {
-        setLastDirection("up")
+        setLastDirection("up");
       }
       if (event.key === "ArrowDown") {
-        setLastDirection("down")
+        setLastDirection("down");
       }
-    })
-  }, [])
+    });
+  }, []);
 
   useEffect(() => {
     if (playing) {
       const myInterval = setInterval(() => {
-        mainMovement(lastDirection)
-      }, 500)
+        mainMovement(lastDirection);
+      }, 500);
     }
-    return () => clearInterval(myInterval)
-  }, [lastDirection, playing])
+    return () => clearInterval(myInterval);
+  }, [lastDirection, playing]);
   return (
     <div className='main'>
       <div
@@ -194,8 +196,8 @@ export default function Home() {
                   {String(i) + String(j)}
                   {snake}
                 </li>
-              )
-            })
+              );
+            });
           })}
         </ul>
         {!playing && (
@@ -235,5 +237,5 @@ export default function Home() {
         </a>
       </div>
     </div>
-  )
+  );
 }
