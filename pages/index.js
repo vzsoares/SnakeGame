@@ -13,15 +13,15 @@ export default function Home() {
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
   ]);
+  const [playing, setPlaying] = useState(true);
   const [snake, setSnake] = useState(["13", "14", "15", "16"]);
-
   const [apple, setApple] = useState(["43"]);
   const [lastDirection, setLastDirection] = useState("down");
-  const [playing, setPlaying] = useState(true);
-  const [lastHeads, setLastHeads] = useState("16 26");
+
   const youLost = (myMsg) => {
     alert(`${myMsg}`);
   };
+
   const getNextGridBlock = (direction, prevHead) => {
     let snakeHead = "";
 
@@ -64,14 +64,8 @@ export default function Home() {
       snakeHead = `${0}${snakeHead}`;
     }
 
-    setLastHeads(`${prevHead} ${snakeHead}`);
-    if (dumbSnake.includes(snakeHead)) {
-      setPlaying(false);
-      youLost("oh no you hit yourself");
-    }
     return snakeHead;
   };
-  let dumbSnake = [...snake];
 
   const mainMovement = (direction) => {
     const nextHead = getNextGridBlock(direction, snake[snake.length - 1]);
@@ -93,8 +87,9 @@ export default function Home() {
     setSnake([...snake.slice(1), nextHead]);
   };
   //
-  function getNextHead(prevHead, direction) {}
+  function getNextHead(direction, prevHead) {}
   const [keyPressed, setKeyPressed] = useState("");
+
   const keyFunctions = {
     ArrowUp: () => {
       if (lastDirection !== "down") {
