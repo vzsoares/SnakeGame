@@ -63,30 +63,6 @@ export default function Home() {
     if (snakeHead.length !== 2) {
       snakeHead = `${0}${snakeHead}`;
     }
-    // handle oppositeDirectionClick
-    if (lastHeads === `${snakeHead} ${prevHead}`) {
-      let oppositeDirection = "";
-      if (direction === "left") {
-        oppositeDirection = "right";
-      }
-      if (direction === "right") {
-        oppositeDirection = "left";
-      }
-      if (direction === "up") {
-        oppositeDirection = "down";
-      }
-      if (direction === "down") {
-        oppositeDirection = "up";
-      }
-
-      const newAnswer = getNextGridBlock(
-        `${oppositeDirection}`,
-        dumbSnake[dumbSnake.length - 1]
-      );
-      setLastDirection(oppositeDirection);
-      setLastHeads(`${newAnswer} ${prevHead}`);
-      return newAnswer;
-    }
 
     setLastHeads(`${prevHead} ${snakeHead}`);
     if (dumbSnake.includes(snakeHead)) {
@@ -96,6 +72,7 @@ export default function Home() {
     return snakeHead;
   };
   let dumbSnake = [...snake];
+
   const mainMovement = (direction) => {
     const nextHead = getNextGridBlock(direction, snake[snake.length - 1]);
     function getApple(i, j) {
@@ -115,22 +92,38 @@ export default function Home() {
 
     setSnake([...snake.slice(1), nextHead]);
   };
-
+  //
+  function getNextHead(prevHead, direction) {}
+  const [keyPressed, setKeyPressed] = useState("");
+  const keyFunctions = {
+    ArrowUp: () => {
+      if (lastDirection !== "down") {
+        setLastDirection("up");
+      }
+    },
+    ArrowDown: () => {
+      if (lastDirection !== "up") {
+        setLastDirection("down");
+      }
+    },
+    ArrowRight: () => {
+      if (lastDirection !== "left") {
+        setLastDirection("right");
+      }
+    },
+    ArrowLeft: () => {
+      if (lastDirection !== "right") {
+        setLastDirection("left");
+      }
+    },
+  };
+  useEffect(() => {
+    keyFunctions[keyPressed] && keyFunctions[keyPressed]();
+  }, [keyPressed]);
   useEffect(() => {
     // set Event Listeners
     window.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowRight") {
-        setLastDirection("right");
-      }
-      if (event.key === "ArrowLeft") {
-        setLastDirection("left");
-      }
-      if (event.key === "ArrowUp") {
-        setLastDirection("up");
-      }
-      if (event.key === "ArrowDown") {
-        setLastDirection("down");
-      }
+      setKeyPressed(event.key);
     });
   }, []);
 
