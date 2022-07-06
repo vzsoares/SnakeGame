@@ -4,24 +4,24 @@ import { FaGithubSquare } from "react-icons/fa";
 
 export default function Home() {
   const [myGrid, setMyGrid] = useState([
-    ["white", "white", "white", "white", "white", "white", "white", "white"],
-    ["white", "white", "white", "white", "white", "white", "white", "white"],
-    ["white", "white", "white", "white", "white", "white", "white", "white"],
-    ["white", "white", "white", "white", "white", "white", "white", "white"],
-    ["white", "white", "white", "white", "white", "white", "white", "white"],
-    ["white", "white", "white", "white", "white", "white", "white", "white"],
-    ["white", "white", "white", "white", "white", "white", "white", "white"],
-    ["white", "white", "white", "white", "white", "white", "white", "white"],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
   ]);
   const [snake, setSnake] = useState(["13", "14", "15", "16"]);
 
   const [apple, setApple] = useState(["43"]);
   const [lastDirection, setLastDirection] = useState("down");
   const [playing, setPlaying] = useState(true);
+  const [lastHeads, setLastHeads] = useState("16 26");
   const youLost = (myMsg) => {
     alert(`${myMsg}`);
   };
-  const [lastHeads, setLastHeads] = useState("16 26");
   const getNextGridBlock = (direction, prevHead) => {
     let snakeHead = "";
 
@@ -33,6 +33,7 @@ export default function Home() {
       }
       snakeHead = String(Number(prevHead) + 1);
     }
+
     if (direction === "left") {
       if (Number(prevHead[1]) - 1 < 0) {
         setPlaying(false);
@@ -49,6 +50,7 @@ export default function Home() {
       }
       snakeHead = Number(prevHead[0]) - 1 + prevHead[1];
     }
+
     if (direction === "down") {
       if (Number(prevHead[0]) + 1 > 7) {
         setPlaying(false);
@@ -76,6 +78,7 @@ export default function Home() {
       if (direction === "down") {
         oppositeDirection = "up";
       }
+
       const newAnswer = getNextGridBlock(
         `${oppositeDirection}`,
         dumbSnake[dumbSnake.length - 1]
@@ -84,6 +87,7 @@ export default function Home() {
       setLastHeads(`${newAnswer} ${prevHead}`);
       return newAnswer;
     }
+
     setLastHeads(`${prevHead} ${snakeHead}`);
     if (dumbSnake.includes(snakeHead)) {
       setPlaying(false);
@@ -93,26 +97,23 @@ export default function Home() {
   };
   let dumbSnake = [...snake];
   const mainMovement = (direction) => {
-    dumbSnake.shift();
-    dumbSnake.push(
-      getNextGridBlock(direction, dumbSnake[dumbSnake.length - 1])
-    );
-    if (apple.includes(dumbSnake[dumbSnake.length - 1])) {
-      // increase snake size
-      dumbSnake = [...apple, ...dumbSnake];
-      // get new randomApple
-      const getApple = (i, j) => {
-        let myApple = `${apple}`;
-        while (dumbSnake.includes(myApple)) {
-          myApple =
-            String(Math.floor(Math.random() * i)) +
-            String(Math.floor(Math.random() * j));
-        }
-        return myApple;
-      };
-      setApple(getApple(7, 7));
+    const nextHead = getNextGridBlock(direction, snake[snake.length - 1]);
+    function getApple(i, j) {
+      let result = `${Math.floor(Math.random() * i)}${Math.floor(
+        Math.random() * j
+      )}`;
+      if (!snake.includes(result) && result !== nextHead) {
+        return result;
+      } else return getApple(i, j);
     }
-    setSnake([...dumbSnake]);
+
+    if (apple.includes(nextHead)) {
+      setSnake([...apple, ...snake.slice(1), nextHead]);
+      setApple([getApple(7, 7)]);
+      return;
+    }
+
+    setSnake([...snake.slice(1), nextHead]);
   };
 
   useEffect(() => {
@@ -134,13 +135,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (playing) {
-      const myInterval = setInterval(() => {
-        mainMovement(lastDirection);
-      }, 500);
+    if (!playing) {
+      return;
     }
+    const myInterval = setInterval(() => {
+      mainMovement(lastDirection);
+    }, 500);
     return () => clearInterval(myInterval);
-  }, [lastDirection, playing]);
+  }, [lastDirection, playing, snake]);
   return (
     <div className='main'>
       <div
