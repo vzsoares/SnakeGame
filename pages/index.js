@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FaGithubSquare } from "react-icons/fa";
 
 export default function Home() {
-  const [myGrid, setMyGrid] = useState([
+  const [myGrid] = useState([
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
@@ -18,59 +18,36 @@ export default function Home() {
   const [apple, setApple] = useState(["43"]);
   const [lastDirection, setLastDirection] = useState("down");
 
-  const youLost = (myMsg) => {
-    alert(`${myMsg}`);
-  };
+  function finishGame() {
+    setPlaying(false);
+    alert("You Lost !!!");
+  }
 
-  const getNextGridBlock = (direction, prevHead) => {
-    let snakeHead = "";
+  function getNextHead(direction, prevHead) {
+    switch (direction) {
+      case "up":
+        if (Number(prevHead[0]) - 1 < 0) finishGame();
+        return Number(prevHead[0]) - 1 + prevHead[1];
 
-    if (direction === "right") {
-      if (Number(prevHead[1]) + 1 > 7) {
-        setPlaying(false);
-        youLost("oh no you hit the wall");
-        return;
-      }
-      snakeHead = String(Number(prevHead) + 1);
-    }
+      case "down":
+        if (Number(prevHead[0]) + 1 > 7) finishGame();
+        return Number(prevHead[0]) + 1 + prevHead[1];
 
-    if (direction === "left") {
-      if (Number(prevHead[1]) - 1 < 0) {
-        setPlaying(false);
-        youLost("oh no you hit the wall");
-        return;
-      }
-      snakeHead = String(Number(prevHead) - 1);
-    }
-    if (direction === "up") {
-      if (Number(prevHead[0]) - 1 < 0) {
-        setPlaying(false);
-        youLost("oh no you hit the wall");
-        return;
-      }
-      snakeHead = Number(prevHead[0]) - 1 + prevHead[1];
-    }
+      case "left":
+        if (Number(prevHead[1]) - 1 < 0) finishGame();
+        return `${prevHead[0]}${Number(prevHead[1]) - 1}`;
 
-    if (direction === "down") {
-      if (Number(prevHead[0]) + 1 > 7) {
-        setPlaying(false);
-        youLost("oh no you hit the wall");
-        return;
-      }
-      snakeHead = Number(prevHead[0]) + 1 + prevHead[1];
+      case "right":
+        if (Number(prevHead[1]) + 1 > 7) finishGame();
+        return `${prevHead[0]}${Number(prevHead[1]) + 1}`;
     }
-    // prevent wrong output when i=0
-    if (snakeHead.length !== 2) {
-      snakeHead = `${0}${snakeHead}`;
-    }
-
-    return snakeHead;
-  };
+  }
 
   const mainMovement = (direction) => {
-    const nextHead = getNextGridBlock(direction, snake[snake.length - 1]);
+    const nextHead = getNextHead(direction, snake[snake.length - 1]);
+
     function getApple(i, j) {
-      let result = `${Math.floor(Math.random() * i)}${Math.floor(
+      const result = `${Math.floor(Math.random() * i)}${Math.floor(
         Math.random() * j
       )}`;
       if (!snake.includes(result) && result !== nextHead) {
@@ -78,17 +55,19 @@ export default function Home() {
       } else return getApple(i, j);
     }
 
+    if (snake.includes(nextHead)) {
+      finishGame();
+      return;
+    }
+
     if (apple.includes(nextHead)) {
       setSnake([...apple, ...snake.slice(1), nextHead]);
-      setApple([getApple(7, 7)]);
+      setApple([getApple(8, 8)]);
       return;
     }
 
     setSnake([...snake.slice(1), nextHead]);
   };
-  //
-  function getNextHead(direction, prevHead) {}
-  const [keyPressed, setKeyPressed] = useState("");
 
   const keyFunctions = {
     ArrowUp: () => {
@@ -112,25 +91,26 @@ export default function Home() {
       }
     },
   };
+
   useEffect(() => {
-    keyFunctions[keyPressed] && keyFunctions[keyPressed]();
-  }, [keyPressed]);
-  useEffect(() => {
-    // set Event Listeners
-    window.addEventListener("keydown", (event) => {
-      setKeyPressed(event.key);
-    });
-  }, []);
+    function executeKeyFunction(event) {
+      // executes key function if exists
+      keyFunctions[event.key] && keyFunctions[event.key]();
+    }
+    window.addEventListener("keydown", executeKeyFunction);
+    return () => window.removeEventListener("keydown", executeKeyFunction);
+  }, [lastDirection]);
 
   useEffect(() => {
     if (!playing) {
       return;
     }
-    const myInterval = setInterval(() => {
+    const gameInterval = setInterval(() => {
       mainMovement(lastDirection);
     }, 500);
-    return () => clearInterval(myInterval);
+    return () => clearInterval(gameInterval);
   }, [lastDirection, playing, snake]);
+
   return (
     <div className='main'>
       <div
@@ -184,7 +164,6 @@ export default function Home() {
                   }}
                 >
                   {String(i) + String(j)}
-                  {snake}
                 </li>
               );
             });
